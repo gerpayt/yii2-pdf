@@ -11,6 +11,7 @@ use Yii;
 use yii\base\Component;
 use yii\web\Response;
 use yii\web\ResponseFormatterInterface;
+use yii\web\ServerErrorHttpException;
 
 /**
  * PdfResponseFormatter formats the given HTML data into a PDF response content.
@@ -63,7 +64,11 @@ class PdfResponseFormatter extends Component implements ResponseFormatterInterfa
 	public function format($response)
 	{
 		$response->getHeaders()->set('Content-Type', 'application/pdf');
-		$response->content = $this->formatPdf($response);
+        if($response->statusCode == 200) {
+            $response->content = $this->formatPdf($response);
+        } else {
+            throw new ServerErrorHttpException();
+        }
 	}
 
 	/**
